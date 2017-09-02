@@ -1,0 +1,2 @@
+docker build -t efdc4
+docker run -h node01 --name cont1 -it efdc3 /bin/bash
