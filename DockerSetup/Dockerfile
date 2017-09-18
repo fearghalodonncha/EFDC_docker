@@ -15,7 +15,7 @@ RUN apt-get update -y && \
     apt-get install -y --no-install-recommends sudo build-essential && \
     apt-get install -y --no-install-recommends sudo apt-utils && \
     apt-get install -y --no-install-recommends openssh-server wget \
-        python-dev python-numpy python-pip python-virtualenv python-matplotlib \
+        python-dev python-numpy python-pip python-virtualenv python-matplotlib python-tk \
         git make gcc gfortran m4 zlib1g-dev libopenmpi-dev openmpi-bin openmpi-common openmpi-doc binutils && \
     apt-get clean && apt-get purge && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -108,9 +108,6 @@ ADD ssh/id_rsa.mpi.pub ${SSHDIR}/authorized_keys
 RUN chmod -R 600 ${SSHDIR}* && \
     chown -R ${USER}:${USER} ${SSHDIR}
 
-RUN pip install --upgrade pip \
-    && pip install -U setuptools 
-
 # ------------------------------------------------------------
 # Configure OpenMPI
 # ------------------------------------------------------------
@@ -118,6 +115,15 @@ RUN pip install --upgrade pip \
 RUN rm -fr ${HOME}/.openmpi && mkdir -p ${HOME}/.openmpi
 ADD default-mca-params.conf ${HOME}/.openmpi/mca-params.conf
 RUN chown -R ${USER}:${USER} ${HOME}/.openmpi
+
+
+
+RUN pip install --upgrade pip \
+    && pip install --user -U setuptools \
+    && pip install -U netCDF4 \
+    && pip install -U matplotlib \
+    && pip install -U numpy 
+
 
 # ------------------------------------------------------------
 # Clone EFDC source code and sample setups
