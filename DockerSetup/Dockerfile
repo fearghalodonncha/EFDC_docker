@@ -1,5 +1,14 @@
-# Build this image:  docker build -t efdc .
-# Run the image as root: docker run -h node01 --name cont1 -it efdc /bin/bash
+# Building:
+#       docker build --network=host --tag dev-deepcurrent:efdc . -f Dockerfile
+# Removing intermediate images and inactive containers afterwards:
+#       docker images -q --filter dangling=true | xargs docker rmi
+#       docker rm $(docker ps -qa --no-trunc --filter "status=exited")
+# Extracting for sharing on another machine:
+#       docker save dev-deepcurrent:efdc > deepcurrent-cpu-ubuntu.tar
+# Loading on another machine:
+#       docker load < deepcurrent-cpu-ubuntu.tar
+# Running with information on what "node" it runs:
+        docker run -h node01 --name cont1 -it efdc /bin/bash
 
 FROM ubuntu:19.10
 
