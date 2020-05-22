@@ -1,7 +1,7 @@
 # Build this image:  docker build -t efdc .
 # Run the image as root: docker run -h node01 --name cont1 -it efdc /bin/bash
 
-FROM ubuntu:16.04
+FROM ubuntu:19.10
 
 MAINTAINER Fearghal O'Donncha <feardonn@ie.ibm.com>
 
@@ -11,65 +11,20 @@ ENV DEBIAN_FRONTEND=noninteractive \
     HOME=/home/${USER} 
 
 
-RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends sudo build-essential && \
-    apt-get install -y --no-install-recommends sudo apt-utils && \
-    apt-get install -y --no-install-recommends openssh-server wget \
-        python-dev python-numpy python-pip python-virtualenv python-matplotlib python-tk \
-        git make gcc gfortran m4 zlib1g-dev libopenmpi-dev openmpi-bin openmpi-common openmpi-doc binutils && \
-    apt-get clean && apt-get purge && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get clean 
+RUN apt-get update 
+RUN apt-get install -y --no-install-recommends build-essential \
+    apt-utils openssh-server wget openmpi-doc binutils \
+    git make gcc gfortran m4 zlib1g-dev libopenmpi-dev openmpi-bin openmpi-common \ 
+    openmpi-doc binutils python3-dev python3-numpy python3-pip python3-virtualenv \ 
+    python3-matplotlib python3-tk python3-setuptools
+ 
+RUN apt-get install -y --no-install-recommends libnetcdf-dev libnetcdff-dev
+RUN apt-get install -y --no-install-recommends libblas-dev liblapack-dev
+RUN apt-get clean && apt-get purge && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
- RUN mkdir /tmp/src-temp
- WORKDIR /tmp/src-temp
-
-# Add NetCDF & OpenBlas libraries
-# 1) We need HDF
-     #Required for NetCDF integration; source is supported at http://www.hdfgroup.org/ftp/HDF5/current/src
-
-ARG HDF_VERSION="1.10.1"  
-# Download build and install HDF5
-RUN wget http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.10.1.tar.bz2; \
-    tar -xjvf hdf5-${HDF_VERSION}.tar.bz2; \ 
-    cd hdf5-${HDF_VERSION}; \
-    ./configure --enable-shared --prefix=/usr/local/hdf5; \
-    make;  \
-    make install; \
-    cd ..;  \
-    rm -rf /hdf5-${HDF_VERSION} /hdf5-${HDF_VERSION}.tar.bz2; 
-
-# 2)
-#Build netcdf 
-# First we need to build NetCDF C version 
-# (http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html)
-# Download and install netcdf C
-
- ARG NCD_VERSION="4.3.3.1"
- RUN wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-${NCD_VERSION}.tar.gz; \ 
- tar xzvf netcdf-${NCD_VERSION}.tar.gz; \
-   cd netcdf-${NCD_VERSION}; \
-   ./configure --prefix=/usr/local/netcdf CC=gcc LDFLAGS=-L/usr/local/hdf5/lib CFLAGS=-I/usr/local/hdf5/include; \
-   make ; \ 
-   make install;\ 
-   cd .. ;\ 
-   rm -rf netcdf-${NCD_VERSION} netcdf-${NCD_VERSION}.tar.gz
-
-# 3) Build NetCDF fortran version
-# (http://www.unidata.ucar.edu/software/netcdf/docs/building_netcdf_fortran.html)
-# Download and install NetCDF fortran
-ARG NCF_VERSION="4.4.2"
-RUN wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-${NCF_VERSION}.tar.gz; \
-     tar -xzvf netcdf-fortran-${NCF_VERSION}.tar.gz;  \
-    cd netcdf-fortran-${NCF_VERSION}; \
-    ./configure --prefix=/usr/local/netcdf \
-                 --disable-fortran-type-check \
-                CC=gcc \ 
-                FC=gfortran \
-                LDFLAGS=-L/usr/local/netcdf/lib \
-                CFLAGS=-I/usr/local/netcdf/include; \
-    make ;  \
-    make install; \
-    cd ..//.. ;  \
-    rm -rf /tmp/src-temp
+RUN mkdir /tmp/src-temp
+WORKDIR /tmp/src-temp
 
 # Create MPI configuration options
 RUN mkdir /var/run/sshd
@@ -118,11 +73,9 @@ RUN chown -R ${USER}:${USER} ${HOME}/.openmpi
 
 
 
-RUN pip install --upgrade pip \
-    && pip install --user -U setuptools \
-    && pip install -U netCDF4 \
-    && pip install -U matplotlib \
-    && pip install -U numpy 
+RUN pip3 install --no-cache-dir --upgrade pip 
+ADD requirements.txt / 
+RUN pip3 install --no-cache-dir -r requirements.txt 
 
 
 # ------------------------------------------------------------
@@ -136,7 +89,6 @@ RUN chown -R ${USER}:${USER} ${HOME}/Tutorial; \
     cd ${HOME}/Tutorial/Src; \
     make; 
 
-ENV LD_LIBRARY_PATH="/usr/local/netcdf/lib:${LD_LIBRARY_PATH}"
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
