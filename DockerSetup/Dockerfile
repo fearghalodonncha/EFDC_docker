@@ -8,7 +8,7 @@
 # Loading on another machine:
 #       docker load < deepcurrent-cpu-ubuntu.tar
 # Running with information on what "node" it runs:
-        docker run -h node01 --name cont1 -it efdc /bin/bash
+#        docker run -h node01 --name cont1 -it efdc /bin/bash
 
 FROM ubuntu:19.10
 
