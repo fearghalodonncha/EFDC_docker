@@ -23,7 +23,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN apt-get clean 
 RUN apt-get update 
 RUN apt-get install -y --no-install-recommends build-essential \
-    apt-utils openssh-server wget openmpi-doc binutils \
+    apt-utils openssh-server wget openmpi-doc binutils vim \
     git make gcc gfortran m4 zlib1g-dev libopenmpi-dev openmpi-bin openmpi-common \ 
     openmpi-doc binutils python3-dev python3-numpy python3-pip python3-virtualenv \ 
     python3-matplotlib python3-tk python3-setuptools
