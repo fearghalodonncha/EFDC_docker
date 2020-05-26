@@ -1,4 +1,6 @@
 # Building:
+#       docker build --tag dev-deepcurrent:efdc . -f Dockerfile
+# Note that if DNS issues arise it may help to specify the network explicitly
 #       docker build --network=host --tag dev-deepcurrent:efdc . -f Dockerfile
 # Removing intermediate images and inactive containers afterwards:
 #       docker images -q --filter dangling=true | xargs docker rmi
@@ -9,6 +11,10 @@
 #       docker load < deepcurrent-cpu-ubuntu.tar
 # Running with information on what "node" it runs:
 #        docker run -h node01 --name cont1 -it efdc /bin/bash
+# Running with sharing of the directory "work" and
+# full access to physical memory:
+#       docker run -it  --volume /Users/fearghal/Work/EFDC/:/home/efdc/work/ --name=cont1 efdc /bin/bash
+
 
 FROM ubuntu:19.10
 
@@ -92,10 +98,10 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # ------------------------------------------------------------
 
 ENV TRIGGER 1
-RUN mkdir ${HOME}/Tutorial
-RUN git clone https://github.com/fearghalodonncha/DeepCurrent.git ${HOME}/Tutorial/
-RUN chown -R ${USER}:${USER} ${HOME}/Tutorial; \
-    cd ${HOME}/Tutorial/Src; \
+RUN mkdir ${HOME}/Efdc_src
+RUN git clone https://github.com/fearghalodonncha/DeepCurrent.git ${HOME}/Efdc_src/
+RUN chown -R ${USER}:${USER} ${HOME}/Efdc_src; \
+    cd ${HOME}/Efdc_src/Src; \
     make; 
 
 
