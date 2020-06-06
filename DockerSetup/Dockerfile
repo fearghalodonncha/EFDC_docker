@@ -2,6 +2,11 @@
 #       docker build --tag dev-deepcurrent:efdc . -f Dockerfile
 # Note that if DNS issues arise it may help to specify the network explicitly
 #       docker build --network=host --tag dev-deepcurrent:efdc . -f Dockerfile
+# Running with information on what "node" it runs:
+#        docker run -h node01 --name cont1 -it efdc /bin/bash
+# Running with sharing of the directory "work" and
+# full access to physical memory:
+#       docker run --volume /Users/fearghal/Work/EFDC/:/home/efdc/work/ --name=cont1 -it efdc /bin/bash
 # Removing intermediate images and inactive containers afterwards:
 #       docker images -q --filter dangling=true | xargs docker rmi
 #       docker rm $(docker ps -qa --no-trunc --filter "status=exited")
@@ -9,11 +14,6 @@
 #       docker save dev-deepcurrent:efdc > deepcurrent-cpu-ubuntu.tar
 # Loading on another machine:
 #       docker load < deepcurrent-cpu-ubuntu.tar
-# Running with information on what "node" it runs:
-#        docker run -h node01 --name cont1 -it efdc /bin/bash
-# Running with sharing of the directory "work" and
-# full access to physical memory:
-#       docker run -it  --volume /Users/fearghal/Work/EFDC/:/home/efdc/work/ --name=cont1 efdc /bin/bash
 
 
 FROM ubuntu:19.10
