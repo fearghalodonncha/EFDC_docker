@@ -6,7 +6,7 @@
 #        docker run -h node01 --name cont1 -it efdc /bin/bash
 # Running with sharing of the directory "work" and
 # full access to physical memory:
-#       docker run --volume /Users/fearghal/Work/EFDC/:/home/efdc/work/ --name=cont1 -it efdc /bin/bash
+#       docker run --volume /Users/fearghal/Work/EFDC/:/home/efdc/work/ --name=cont1 -it dev-deepcurrent:efdc /bin/bash
 # Removing intermediate images and inactive containers afterwards:
 #       docker images -q --filter dangling=true | xargs docker rmi
 #       docker rm $(docker ps -qa --no-trunc --filter "status=exited")
